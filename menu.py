@@ -1,5 +1,8 @@
+#Imports estandar
 import os  
-import time  
+import time 
+
+#Imports locales 
 from usuario import Usuario  
 from biblioteca import Biblioteca  
 from playlist import Playlist  
