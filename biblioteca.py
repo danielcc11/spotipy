@@ -1,27 +1,37 @@
+import pandas as pd  
 from artistas import Artista  
 
 class Biblioteca:  
     def __init__(self):  
-        self.__artistas = {}  
+        #Usar un DataFrame para almacenar artistas y sus canciones  
+        self.__artistas_df = pd.DataFrame(['artista', 'cancion'])  
     
     def agregar_artista(self, nombre_artista, **kwargs):  
-        if nombre_artista not in self.__artistas:  
-            self.__artistas[nombre_artista] = Artista(nombre_artista, **kwargs)  
-            for llave, valor in kwargs.items():  
-            	setattr(self, llave, valor)  
+        #Crear el artista solo si no existe   
+        if nombre_artista not in self.__artistas_df['artista'].values:  
+            artista = Artista(nombre_artista, **kwargs)  
+            for cancion in artista.canciones_populares:  
+                nueva_fila = pd.DataFrame({'artista': [artista.nombre], 'cancion': [cancion.titulo]})  
+                self.__artistas_df = pd.concat([self.__artistas_df, nueva_fila])  
 
     def obtener_artistas(self):  
-        return self.__artistas  
+        return self.__artistas_df['artista'].unique()  #Retorna una lista de artistas unicos  
 
-    def obtener_cancion(self, titulo, artista):  
-        if artista in self.__artistas: 
-            for cancion in self.__artistas[artista].canciones_populares:
-                if cancion.titulo.lower() == titulo.lower(): 
-                    return cancion  
+    def obtener_cancion(self, titulo_cancion, nombre_artista):  
+        #Buscar una cancion específica dentro del DataFrame  
+        if nombre_artista in self.__artistas_df['artista'].values:  
+            canciones_encontradas = self.__artistas_df[  
+                (self.__artistas_df['artista'] == nombre_artista),  
+                (self.__artistas_df['cancion'].str.lower() == titulo_cancion.lower())  
+            ]  
+            if not canciones_encontradas.empty:  
+                return canciones_encontradas  
         return None  
 
     def listar_artistas(self):  
-        for artista in self.__artistas.values():  
-            print(f"Artista: {artista.nombre}")  
-            for cancion in artista.canciones_populares:  
-                print(f"  - {cancion.titulo}") 
+        #Listar todos los artistas y sus canciones  
+        for nombre_artista in self.obtener_artistas():  
+            print(f"Artista: {nombre_artista}")  
+            canciones = self.__artistas_df[self.__artistas_df['artista'] == nombre_artista]['cancion']  
+            for cancion in canciones:  
+                print(f"  - {cancion}")
