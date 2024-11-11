@@ -1,6 +1,5 @@
 # clon-spotipy
 clon de spotipy aplicando POO
-<<<<<<< HEAD
 
 ¿Como correr el proyecto?
 
